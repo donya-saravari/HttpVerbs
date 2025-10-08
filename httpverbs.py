@@ -1,53 +1,81 @@
 import requests
-def get_request(url):
-    response = requests.get(url)
-    print("GET Request:")
-    print("Status Code: ", response.status_code)
-    print("Response Body: ", response.json())
-    print()
-def post_request(url, data):
-    response = requests.post(url, json=data)
-    print("POST Request:")
-    print("Status Code: ", response.status_code)
-    print("Response Body: ", response.json())
-    print()
-def put_request(url, data):
-    response = requests.put(url, json=data)
-    print("PUT Request:")
-    print("Status Code: ", response.status_code)
-    print("Response Body: ", response.json())
-    print()
-def delete_request(url):
-    response = requests.delete(url)
-    print("DELETE Request:")
-    print("Status Code: ", response.status_code)
-    print("Response Body: ", response.json())
-    print()
-def read_all_posts(url):
-    response = requests.get(url)
-    print("All Posts:")
-    print("Status Code: ", response.status_code)
-    posts = response.json()
-    for post in posts:
-        print(f"Post ID: {post['id']}, Title: {post['title']}")
-        print()
+class WebLogClient:
+    def __init__(self):
+      self.base_url = "https://jsonplaceholder.typicode.com"
+
+    def get_post(self, post_id: int):
+        route = f"/posts/{post_id}"
+        url = self.base_url + route
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+
+    def create_post(self, post_id: int, title: str, body: str, user_id: int):
+        route = f"/posts"
+        url = self.base_url + route
+        data = {
+            "id": post_id,
+            "title": title,
+            "body": body,
+            "userId": user_id,
+        }
+        response = requests.post(url, json=data)
+        response.raise_for_status()
+        return response.json()
+
+    def edit_post(self, post_id: int, title: str, body: str, user_id: int):
+        route = f"/posts/{post_id}"
+        url = self.base_url + route
+        data = {
+            "id": post_id,
+            "title": title,
+            "body": body,
+            "userId": user_id,
+        }
+        response = requests.put(url, json=data)
+        response.raise_for_status()
+        return response.json()
+
+    def delete_post(self, post_id: int):
+        route = f"/posts/{post_id}"
+        url = self.base_url + route
+        response = requests.delete(url)
+        response.raise_for_status()
+        return response.json()
+
+    def read_all_posts(self):
+        route = "/posts"
+        url = self.base_url + route
+        response = requests.get(url)
+        response.raise_for_status()
+        print("All Posts:")
+        posts = response.json()
+        for post in posts:
+            print(f"Post ID: {post['id']}, Title: {post['title']}")
+            print()
 def main():
-    base_url = "https://jsonplaceholder.typicode.com"
-    get_request(f"{base_url}/posts/2")
-    post_data = {
-        "id": 1,
-        "title": "new post title",
-        "body": "the body of the post",
-        "userId": 1,
-    }
-    post_request(f"{base_url}/posts", post_data)
-    put_data = {
-        "id": 1,
-        "title": "updated title",
-        "body": "updated body",
-        "userId": 1,
-    }
-    put_request(f"{base_url}/posts/1", put_data)
-    delete_request(f"{base_url}/posts/1")
+    weblog = WebLogClient()
+    post_id = 10
+    my_post = weblog.get_post(post_id=post_id)
+    print(f"Read post: {post_id}")
+    print(my_post)
+    create_post_id = 2
+    create_post_title = "new post title"
+    create_post_body = "new post body"
+    create_post_user_id = 1
+    create_post = weblog.create_post(create_post_id, create_post_title, create_post_body, create_post_user_id)
+    print(f"create post number: {create_post_id}")
+    print(create_post)
+    edit_post_id = 1
+    edit_post_title = "updated title"
+    edit_post_body = "updated body"
+    edit_post_user_id = 1
+    edit_post = weblog.edit_post(edit_post_id, edit_post_title, edit_post_body, edit_post_user_id)
+    print(f"edit post number: {edit_post_id}")
+    print(edit_post)
+    delete_post_id = 3
+    delete_post = weblog.delete_post(delete_post_id)
+    print(f"delete post number: {delete_post_id}")
+    print(delete_post)
 if __name__ == "__main__":
     main()
