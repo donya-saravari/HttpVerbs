@@ -23,15 +23,17 @@ class WebLogClient:
         response.raise_for_status()
         return response.json()
 
-    def edit_post(self, post_id: int, title: str, body: str, user_id: int):
+    def edit_post(self, post_id: int, user_id: int, title = None, body = None):
         route = f"/posts/{post_id}"
         url = self.base_url + route
         data = {
             "id": post_id,
-            "title": title,
-            "body": body,
-            "userId": user_id,
         }
+        if title is not None:
+            data["title"] = title
+        if body is not None:
+            data["body"] = body
+        data["userId"] = user_id
         response = requests.put(url, json=data)
         response.raise_for_status()
         return response.json()
@@ -70,7 +72,7 @@ def main():
     edit_post_title = "updated title"
     edit_post_body = "updated body"
     edit_post_user_id = 1
-    edit_post = weblog.edit_post(edit_post_id, edit_post_title, edit_post_body, edit_post_user_id)
+    edit_post = weblog.edit_post(edit_post_id,edit_post_user_id,edit_post_title , edit_post_body )
     print(f"edit post number: {edit_post_id}")
     print(edit_post)
     delete_post_id = 3
